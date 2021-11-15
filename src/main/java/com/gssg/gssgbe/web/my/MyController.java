@@ -43,7 +43,7 @@ public class MyController {
 	private final UpdateMemberService updateMemberService;
 	private final FindPostService findPostService;
 
-	@Operation(summary = "내 회원 정보 조회", security = @SecurityRequirement(name = "bearerAuth"))
+	@Operation(summary = "내 회원 정보 상세 조회", security = @SecurityRequirement(name = "bearerAuth"))
 	@GetMapping("/api/v1/my")
 	public MemberResponse myInfo(
 		@Parameter(hidden = true) @LoginMember final Member loginMember) {
@@ -76,7 +76,7 @@ public class MyController {
 		@RequestParam @Nullable @Positive final Long currentPostId,
 		@RequestParam(defaultValue = "10") @Positive final Integer size) {
 		final NoOffsetPageRequest pageRequest = NoOffsetPageRequest.of(currentPostId, size);
-		final List<PostDto> postDtos = findPostService.findByMember(loginMember, pageRequest);
+		final List<PostDto> postDtos = findPostService.findByMember(loginMember, loginMember.getId(), pageRequest);
 
 		return FindAllPostResponse.of(postDtos);
 	}

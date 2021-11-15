@@ -38,11 +38,14 @@ public class FindPostController {
 	@GetMapping("/api/v1/posts")
 	public FindAllPostResponse findAll(
 		@Parameter(hidden = true) @LoginMember final Member loginMember,
+		@RequestParam @Nullable @Positive final Long memberId,
 		@RequestParam @Nullable @Positive final Long currentPostId,
 		@RequestParam(defaultValue = "10") @Positive final Integer size,
 		@RequestParam(defaultValue = "ID") final SortType sortType) {
 		final NoOffsetPageRequest pageRequest = NoOffsetPageRequest.of(currentPostId, size, Sort.by(sortType.name()));
-		final List<PostDto> postDtos = findPostService.findAll(loginMember, pageRequest);
+		final List<PostDto> postDtos = memberId == null
+			? findPostService.findAll(loginMember, pageRequest)
+			: findPostService.findByMember(loginMember, memberId, pageRequest);
 
 		return FindAllPostResponse.of(postDtos);
 	}
