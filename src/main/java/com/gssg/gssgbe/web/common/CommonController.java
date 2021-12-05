@@ -1,10 +1,10 @@
 package com.gssg.gssgbe.web.common;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.MDC;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -56,7 +56,7 @@ public class CommonController {
 
 	@Operation(summary = "헬스 체크 - 서버 기동 시간")
 	@GetMapping("/api/v1/common/healthCheck")
-	public LocalDateTime healthCheck() {
-		return LocalDateTime.now();
+	public String healthCheck() {
+		return MDC.get("DEPLOY_TIME");
 	}
 }
