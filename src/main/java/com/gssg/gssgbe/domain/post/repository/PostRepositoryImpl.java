@@ -4,7 +4,10 @@ import static com.gssg.gssgbe.domain.post.entity.QPost.*;
 import static com.gssg.gssgbe.domain.post.repository.PostRepositoryImpl.SortType.*;
 import static com.querydsl.core.types.Order.*;
 
+import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.data.domain.Sort;
 
 import com.gssg.gssgbe.common.clazz.NoOffsetPageRequest;
 import com.gssg.gssgbe.domain.member.entity.Member;
@@ -29,7 +32,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
 		if (pageRequest.isSorted()) {
 			return jpaQuery
-				.orderBy(LIKE_COUNT.orderSpecifier)
+				.orderBy(find(pageRequest.getSort()))
 				.fetch();
 		}
 
@@ -63,5 +66,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 		;
 
 		private final OrderSpecifier<?> orderSpecifier;
+
+		public static OrderSpecifier<?> find(final Sort sort) {
+			return Arrays.stream(SortType.values())
+				.filter(e -> e.name().equals(sort.toString()))
+				.map(e -> e.orderSpecifier)
+				.findFirst()
+				.orElseThrow();
+		}
 	}
 }

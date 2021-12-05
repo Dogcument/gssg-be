@@ -1,10 +1,14 @@
 package com.gssg.gssgbe.domain.reply.repository;
 
+import static com.gssg.gssgbe.domain.post.repository.PostRepositoryImpl.SortType.find;
 import static com.gssg.gssgbe.domain.reply.entity.QReply.*;
 import static com.gssg.gssgbe.domain.reply.repository.ReplyRepositoryImpl.SortType.*;
 import static com.querydsl.core.types.Order.*;
 
+import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.data.domain.Sort;
 
 import com.gssg.gssgbe.common.clazz.NoOffsetPageRequest;
 import com.gssg.gssgbe.domain.reply.entity.Reply;
@@ -31,7 +35,7 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom {
 				.where(
 					reply.post.id.eq(postId)
 				)
-				.orderBy(LIKE_COUNT.orderSpecifier)
+				.orderBy(find(pageRequest.getSort()))
 				.fetch();
 		}
 
@@ -52,5 +56,13 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom {
 		;
 
 		private final OrderSpecifier<?> orderSpecifier;
+
+		public static OrderSpecifier<?> find(final Sort sort) {
+			return Arrays.stream(SortType.values())
+				.filter(e -> e.name().equals(sort.toString()))
+				.map(e -> e.orderSpecifier)
+				.findFirst()
+				.orElseThrow();
+		}
 	}
 }
